@@ -3,6 +3,8 @@ package ru.timekiller;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
 
 /**
  * Created by Дмитрий on 13.04.2015.
@@ -16,11 +18,9 @@ class TimeKillerView extends GLSurfaceView {
 
     public TimeKillerView(Context context){
         super(context);
-
         setEGLContextClientVersion(2);
 
         render = new TimeKillerRender();
-
         setRenderer(render);
     }
 

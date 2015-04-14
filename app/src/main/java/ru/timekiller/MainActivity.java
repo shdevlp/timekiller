@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class MainActivity extends Activity {
     private GLSurfaceView glView;
@@ -18,12 +20,13 @@ public class MainActivity extends Activity {
         final ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
         final boolean supportsEs2 = configurationInfo.reqGlEsVersion >= 0x20000;
 
-        if (supportsEs2)
-        {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        if (supportsEs2) {
             glView = new TimeKillerView(this);
-        }
-        else
-        {
+        } else {
             return;
         }
 

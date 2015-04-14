@@ -1,102 +1,130 @@
 package ru.timekiller;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
+import java.nio.IntBuffer;
+
+/**
+ * Created by Дмитрий on 14.04.2015.
+ */
 public class ShaderHelper {
-	private static final String TAG = "ShaderHelper";
-	
-	/** 
-	 * Helper function to compile a shader.
-	 * 
-	 * @param shaderType The shader type.
-	 * @param shaderSource The shader source code.
-	 * @return An OpenGL handle to the shader.
-	 */
-	public static int compileShader(final int shaderType, final String shaderSource) 
-	{
-		int shaderHandle = GLES20.glCreateShader(shaderType);
+    private int shaderId;
+    private int shaderVp;
+    private int shaderFp;
 
-		if (shaderHandle != 0) 
-		{
-			// Pass in the shader source.
-			GLES20.glShaderSource(shaderHandle, shaderSource);
+    private String error;
 
-			// Compile the shader.
-			GLES20.glCompileShader(shaderHandle);
+    public ShaderHelper() {
+    }
 
-			// Get the compilation status.
-			final int[] compileStatus = new int[1];
-			GLES20.glGetShaderiv(shaderHandle, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
+    /**
+     * Создание, компиляция, линковка, проверка шейдеров
+     * @param vertexShader
+     * @param fragmentShader
+     * @return Успех выполнения
+     */
+    public boolean compile(String vertexShader, String fragmentShader) {
+        shaderVp = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
+        shaderFp = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER);
 
-			// If the compilation failed, delete the shader.
-			if (compileStatus[0] == 0) 
-			{
-				Log.e(TAG, "Error compiling shader: " + GLES20.glGetShaderInfoLog(shaderHandle));
-				GLES20.glDeleteShader(shaderHandle);
-				shaderHandle = 0;
-			}
-		}
+        GLES20.glShaderSource(shaderVp, vertexShader);
+        GLES20.glShaderSource(shaderFp, fragmentShader);
 
-		if (shaderHandle == 0)
-		{			
-			throw new RuntimeException("Error creating shader.");
-		}
-		
-		return shaderHandle;
-	}
-	
-	/**
-	 * Helper function to compile and link a program.
-	 * 
-	 * @param vertexShaderHandle An OpenGL handle to an already-compiled vertex shader.
-	 * @param fragmentShaderHandle An OpenGL handle to an already-compiled fragment shader.
-	 * @param attributes Attributes that need to be bound to the program.
-	 * @return An OpenGL handle to the program.
-	 */
-	public static int createAndLinkProgram(final int vertexShaderHandle, final int fragmentShaderHandle, final String[] attributes) 
-	{
-		int programHandle = GLES20.glCreateProgram();
-		
-		if (programHandle != 0) 
-		{
-			// Bind the vertex shader to the program.
-			GLES20.glAttachShader(programHandle, vertexShaderHandle);			
+        GLES20.glCompileShader(shaderVp);
+        if (!validateShader(shaderVp)) {
+            return false;
+        }
 
-			// Bind the fragment shader to the program.
-			GLES20.glAttachShader(programHandle, fragmentShaderHandle);
-			
-			// Bind attributes
-			if (attributes != null)
-			{
-				final int size = attributes.length;
-				for (int i = 0; i < size; i++)
-				{
-					GLES20.glBindAttribLocation(programHandle, i, attributes[i]);
-				}						
-			}
-			
-			// Link the two shaders together into a program.
-			GLES20.glLinkProgram(programHandle);
+        GLES20.glCompileShader(shaderFp);
+        if (!validateShader(shaderFp)) {
+            return false;
+        }
 
-			// Get the link status.
-			final int[] linkStatus = new int[1];
-			GLES20.glGetProgramiv(programHandle, GLES20.GL_LINK_STATUS, linkStatus, 0);
+        return true;
+    }
 
-			// If the link failed, delete the program.
-			if (linkStatus[0] == 0) 
-			{				
-				Log.e(TAG, "Error compiling program: " + GLES20.glGetProgramInfoLog(programHandle));
-				GLES20.glDeleteProgram(programHandle);
-				programHandle = 0;
-			}
-		}
-		
-		if (programHandle == 0)
-		{
-			throw new RuntimeException("Error creating program.");
-		}
-		
-		return programHandle;
-	}
+    public void attach() {
+        shaderId = GLES20.glCreateProgram();
+        GLES20.glAttachShader(shaderId, shaderFp);
+        GLES20.glAttachShader(shaderId, shaderVp);
+    }
+
+    public boolean link() {
+        GLES20.glLinkProgram(shaderId);
+
+        if (!validateProgram(GLES20.GL_VALIDATE_STATUS)) {
+            return false;
+        }
+        if (!validateProgram(GLES20.GL_LINK_STATUS)) {
+            return false;
+        }
+
+        return true;
+    }
+    /**
+     * Удаление шейдеров
+     */
+    public void free() {
+        GLES20.glDetachShader(shaderId, shaderFp);
+        GLES20.glDetachShader(shaderId, shaderVp);
+
+        GLES20.glDeleteShader(shaderFp);
+        GLES20.glDeleteShader(shaderVp);
+        GLES20.glDeleteProgram(shaderId);
+    }
+
+    /**
+     * Привязка
+     */
+    public void bind() {
+        GLES20.glUseProgram(shaderId);
+    }
+
+    public void unbind() {
+        GLES20.glUseProgram(0);
+    }
+
+    public boolean isOk() {
+        return GLES20.glIsShader(shaderId);
+    }
+
+    public String getLastError() {
+        return error;
+    }
+
+    public int getId() {
+        return shaderId;
+    }
+
+    /**
+     * Проверка линковки, статуса шейдера
+     * @param pname
+     * @return
+     */
+    private boolean validateProgram(int pname) {
+        IntBuffer success = IntBuffer.allocate(1);
+        GLES20.glValidateProgram(shaderId);
+        GLES20.glGetProgramiv(shaderId, pname, success);
+        if (success.get(0) != 0) {
+            error = GLES20.glGetProgramInfoLog(shaderId);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Проверка компиляции шейдера
+     * @param shader
+     * @return
+     */
+    private boolean validateShader(int shader) {
+        IntBuffer success = IntBuffer.allocate(1);
+        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, success);
+        if (success.get(0) != 0) {
+            error = GLES20.glGetShaderInfoLog(shader);
+            return false;
+        }
+
+        return true;
+    }
 }
