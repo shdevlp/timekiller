@@ -25,17 +25,13 @@ public class ShaderHelper {
         GLES20.glShaderSource(_vertexShader, vertexShader);
         GLES20.glCompileShader(_vertexShader);
 
-        if (!validateShader(_vertexShader)) {
-            throw new RuntimeException("Error compile vertex shader.");
-        }
+        validateShader(_vertexShader);
 
         _fragmentShader = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER);
         GLES20.glShaderSource(_fragmentShader, fragmentShader);
         GLES20.glCompileShader(_fragmentShader);
 
-        if (!validateShader(_fragmentShader)) {
-            throw new RuntimeException("Error compile fragment shader.");
-        }
+        validateShader(_fragmentShader);
 
         _program = GLES20.glCreateProgram();
 
@@ -44,13 +40,8 @@ public class ShaderHelper {
 
         GLES20.glLinkProgram(_program);
 
-        if (validateProgram(GLES20.GL_VALIDATE_STATUS) == false) {
-            throw new RuntimeException("Error validate shaders.");
-        }
-
-        if (validateProgram(GLES20.GL_LINK_STATUS) == false) {
-            throw new RuntimeException("Error link shaders.");
-        }
+        validateProgram(GLES20.GL_VALIDATE_STATUS);
+        validateProgram(GLES20.GL_LINK_STATUS);
     }
 
     /**
@@ -91,31 +82,27 @@ public class ShaderHelper {
     /**
      * Проверка линковки, статуса шейдера
      * @param program
-     * @return
      */
-    private boolean validateProgram(int program) {
+    private void validateProgram(int program) {
         _success = IntBuffer.allocate(1);
         GLES20.glValidateProgram(_program);
         GLES20.glGetProgramiv(_program, program, _success);
         if (_success.get(0) == GLES20.GL_FALSE) {
             _error = GLES20.glGetProgramInfoLog(_program);
-            return false;
+            throw new RuntimeException("Error validate shaders:"+_error);
         }
-        return true;
     }
 
     /**
      * Проверка компиляции шейдера
      * @param shader
-     * @return
      */
-    private boolean validateShader(int shader) {
+    private void validateShader(int shader) {
         _success = IntBuffer.allocate(1);
         GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, _success);
         if (_success.get(0) == GLES20.GL_FALSE) {
             _error = GLES20.glGetShaderInfoLog(shader);
-            return false;
+            throw new RuntimeException("Error compile shaders:"+_error);
         }
-        return true;
     }
 }

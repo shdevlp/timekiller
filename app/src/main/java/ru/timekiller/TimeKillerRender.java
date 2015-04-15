@@ -28,9 +28,11 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
         _enemy = new Enemy[GlobalVars.enemySize];
         for (int i = 0; i < GlobalVars.enemySize; i++) {
             _enemy[i] = new Enemy();
+            _enemy[i].setRandPosition();
         }
 
         _warrior = new Warrior();
+        _warrior.setRandPosition();
     }
 
     public void onDrawFrame(GL10 unused) {

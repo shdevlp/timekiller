@@ -16,41 +16,42 @@ public class MatrixHelper {
      * Установка проекционной, видовой, модельной матриц
      */
     public MatrixHelper() {
-        final float aspect = (float) GlobalVars.width / (float) GlobalVars.height;
-        Matrix.perspectiveM(_projectionMatrix, 0, 45.0f, aspect, 0.1f, 100.0f);
-
-        final float eyeX = 10.0f;
-        final float eyeY = 3.0f;
-        final float eyeZ = 10.0f;
-
-        final float lookX = 0.0f;
-        final float lookY = 0.0f;
-        final float lookZ = 0.0f;
-
-        final float upX = 0.0f;
-        final float upY = 1.0f;
-        final float upZ = 0.0f;
-
-        Matrix.setLookAtM(_viewMatrix, 0, eyeX, eyeY, eyeZ, lookX, lookY, lookZ, upX, upY, upZ);
+        Matrix.orthoM(_projectionMatrix, 0, GlobalVars.left, GlobalVars.right,
+                GlobalVars.bottom, GlobalVars.top, GlobalVars.near, GlobalVars.far);
+        restoreViewMatrix();
         Matrix.setIdentityM(_modelMatrix, 0);
     }
 
-    public float[] getModelMatrix() {
-        return _modelMatrix;
+    /**
+     * Восстановление видовой матрицы
+     */
+    public void restoreViewMatrix() {
+        Matrix.setLookAtM(_viewMatrix, 0, GlobalVars.eyeX, GlobalVars.eyeY, GlobalVars.eyeZ,
+                GlobalVars.lookX, GlobalVars.lookY, GlobalVars.lookZ,
+                GlobalVars.upX, GlobalVars.upY, GlobalVars.upZ);
     }
 
-    public float[] getViewMatrix() {
-        return _viewMatrix;
+    /**
+     * Перемещение по осям
+     * @param x
+     * @param y
+     * @param z
+     */
+    public void translate(float x, float y, float z) {
+        Matrix.translateM(_viewMatrix, 0, x, y, z);
     }
 
-    public float[] getProjectionMatrix() {
-        return _projectionMatrix;
+    public void loadIdentity() {
+        restoreViewMatrix();
+        Matrix.setIdentityM(_modelMatrix, 0);
     }
 
     public float[] getMvp() {
+        multiMvp();
         return _mvp;
     }
-    public void multiMvp() {
+
+    private void multiMvp() {
         Matrix.multiplyMM(_mvp, 0, _viewMatrix, 0, _modelMatrix, 0);
         Matrix.multiplyMM(_mvp, 0, _projectionMatrix, 0, _mvp, 0);
     }
