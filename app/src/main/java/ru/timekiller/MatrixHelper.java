@@ -41,6 +41,16 @@ public class MatrixHelper {
         Matrix.translateM(_viewMatrix, 0, x, y, z);
     }
 
+    /**
+     * Масштабирование по осям
+     * @param x
+     * @param y
+     * @param z
+     */
+    public void scale(float x, float y, float z) {
+        Matrix.scaleM(_viewMatrix, 0, x, y, z);
+    }
+
     public void loadIdentity() {
         restoreViewMatrix();
         Matrix.setIdentityM(_modelMatrix, 0);

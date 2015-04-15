@@ -33,6 +33,7 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
 
         _warrior = new Warrior();
         _warrior.setRandPosition();
+        _warrior.scale2D(1.5f, 1.5f);
     }
 
     public void onDrawFrame(GL10 unused) {

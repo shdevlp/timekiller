@@ -31,8 +31,8 @@ public class Enemy {
      * Случайная позиция "врага"
      */
     public void setRandPosition() {
-        final float x = GlobalVars.randFloat((int)GlobalVars.left, (int)GlobalVars.right);
-        final float y = GlobalVars.randFloat((int)GlobalVars.bottom, (int)GlobalVars.top);
+        final float x = GlobalVars.randFloat((int)GlobalVars.left + 2, (int)GlobalVars.right - 2);
+        final float y = GlobalVars.randFloat((int)GlobalVars.bottom + 2, (int)GlobalVars.top - 2);
         _matrix.translate(x, y, 0);
     }
 
@@ -45,6 +45,9 @@ public class Enemy {
         _matrix.translate(x, y, 0.0f);
     }
 
+    public void scale2D(float x, float y) {
+        _matrix.scale(x, y, 0.0f);
+    }
     public void draw() {
         _shader.bind();
 
