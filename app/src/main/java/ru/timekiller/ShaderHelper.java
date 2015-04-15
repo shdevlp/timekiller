@@ -8,76 +8,68 @@ import java.nio.IntBuffer;
  * Created by Дмитрий on 14.04.2015.
  */
 public class ShaderHelper {
-    private int shaderId;
-    private int shaderVp;
-    private int shaderFp;
+    private int _program;
+    private int _vertexShader;
+    private int _fragmentShader;
 
-    private String error;
-
-    public ShaderHelper() {
-    }
+    private IntBuffer _success;
+    private String _error;
 
     /**
      * Создание, компиляция, линковка, проверка шейдеров
      * @param vertexShader
      * @param fragmentShader
-     * @return Успех выполнения
      */
-    public boolean compile(String vertexShader, String fragmentShader) {
-        shaderVp = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
-        shaderFp = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER);
+    public void compile(String vertexShader, String fragmentShader) {
+        _vertexShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
+        GLES20.glShaderSource(_vertexShader, vertexShader);
+        GLES20.glCompileShader(_vertexShader);
 
-        GLES20.glShaderSource(shaderVp, vertexShader);
-        GLES20.glShaderSource(shaderFp, fragmentShader);
-
-        GLES20.glCompileShader(shaderVp);
-        if (!validateShader(shaderVp)) {
-            return false;
+        if (!validateShader(_vertexShader)) {
+            throw new RuntimeException("Error compile vertex shader.");
         }
 
-        GLES20.glCompileShader(shaderFp);
-        if (!validateShader(shaderFp)) {
-            return false;
+        _fragmentShader = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER);
+        GLES20.glShaderSource(_fragmentShader, fragmentShader);
+        GLES20.glCompileShader(_fragmentShader);
+
+        if (!validateShader(_fragmentShader)) {
+            throw new RuntimeException("Error compile fragment shader.");
         }
 
-        return true;
+        _program = GLES20.glCreateProgram();
+
+        GLES20.glAttachShader(_program, _vertexShader);
+        GLES20.glAttachShader(_program, _fragmentShader);
+
+        GLES20.glLinkProgram(_program);
+
+        if (validateProgram(GLES20.GL_VALIDATE_STATUS) == false) {
+            throw new RuntimeException("Error validate shaders.");
+        }
+
+        if (validateProgram(GLES20.GL_LINK_STATUS) == false) {
+            throw new RuntimeException("Error link shaders.");
+        }
     }
 
-    public void attach() {
-        shaderId = GLES20.glCreateProgram();
-        GLES20.glAttachShader(shaderId, shaderFp);
-        GLES20.glAttachShader(shaderId, shaderVp);
-    }
-
-    public boolean link() {
-        GLES20.glLinkProgram(shaderId);
-
-        if (!validateProgram(GLES20.GL_VALIDATE_STATUS)) {
-            return false;
-        }
-        if (!validateProgram(GLES20.GL_LINK_STATUS)) {
-            return false;
-        }
-
-        return true;
-    }
     /**
      * Удаление шейдеров
      */
     public void free() {
-        GLES20.glDetachShader(shaderId, shaderFp);
-        GLES20.glDetachShader(shaderId, shaderVp);
+        GLES20.glDetachShader(_program, _vertexShader);
+        GLES20.glDetachShader(_program, _fragmentShader);
 
-        GLES20.glDeleteShader(shaderFp);
-        GLES20.glDeleteShader(shaderVp);
-        GLES20.glDeleteProgram(shaderId);
+        GLES20.glDeleteShader(_vertexShader);
+        GLES20.glDeleteShader(_fragmentShader);
+        GLES20.glDeleteProgram(_program);
     }
 
     /**
      * Привязка
      */
     public void bind() {
-        GLES20.glUseProgram(shaderId);
+        GLES20.glUseProgram(_program);
     }
 
     public void unbind() {
@@ -85,28 +77,28 @@ public class ShaderHelper {
     }
 
     public boolean isOk() {
-        return GLES20.glIsShader(shaderId);
+        return GLES20.glIsShader(_program);
     }
 
     public String getLastError() {
-        return error;
+        return _error;
     }
 
     public int getId() {
-        return shaderId;
+        return _program;
     }
 
     /**
      * Проверка линковки, статуса шейдера
-     * @param pname
+     * @param program
      * @return
      */
-    private boolean validateProgram(int pname) {
-        IntBuffer success = IntBuffer.allocate(1);
-        GLES20.glValidateProgram(shaderId);
-        GLES20.glGetProgramiv(shaderId, pname, success);
-        if (success.get(0) != 0) {
-            error = GLES20.glGetProgramInfoLog(shaderId);
+    private boolean validateProgram(int program) {
+        _success = IntBuffer.allocate(1);
+        GLES20.glValidateProgram(_program);
+        GLES20.glGetProgramiv(_program, program, _success);
+        if (_success.get(0) == GLES20.GL_FALSE) {
+            _error = GLES20.glGetProgramInfoLog(_program);
             return false;
         }
         return true;
@@ -118,13 +110,12 @@ public class ShaderHelper {
      * @return
      */
     private boolean validateShader(int shader) {
-        IntBuffer success = IntBuffer.allocate(1);
-        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, success);
-        if (success.get(0) != 0) {
-            error = GLES20.glGetShaderInfoLog(shader);
+        _success = IntBuffer.allocate(1);
+        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, _success);
+        if (_success.get(0) == GLES20.GL_FALSE) {
+            _error = GLES20.glGetShaderInfoLog(shader);
             return false;
         }
-
         return true;
     }
 }

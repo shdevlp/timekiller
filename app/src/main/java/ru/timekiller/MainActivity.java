@@ -10,7 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public class MainActivity extends Activity {
-    private GLSurfaceView glView;
+    private GLSurfaceView _glView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,23 +25,23 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         if (supportsEs2) {
-            glView = new TimeKillerView(this);
+            _glView = new TimeKillerView(this);
         } else {
             return;
         }
 
-        setContentView(glView);
+        setContentView(_glView);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        glView.onResume();
+        _glView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        glView.onPause();
+        _glView.onPause();
     }
 }

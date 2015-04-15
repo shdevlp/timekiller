@@ -11,17 +11,17 @@ import android.view.WindowManager;
  */
 
 class TimeKillerView extends GLSurfaceView {
-    private final TimeKillerRender render;
-    private float prevX;
-    private float prevY;
+    private final TimeKillerRender _render;
+    private float _prevX;
+    private float _prevY;
 
 
     public TimeKillerView(Context context){
         super(context);
         setEGLContextClientVersion(2);
 
-        render = new TimeKillerRender();
-        setRenderer(render);
+        _render = new TimeKillerRender(this);
+        setRenderer(_render);
     }
 
     @Override
@@ -32,8 +32,8 @@ class TimeKillerView extends GLSurfaceView {
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
 
-                float dx = x - prevX;
-                float dy = y - prevY;
+                float dx = x - _prevX;
+                float dy = y - _prevY;
 
                 if (y > getHeight() / 2) {
                     dx = dx * -1 ;
@@ -44,8 +44,8 @@ class TimeKillerView extends GLSurfaceView {
                 }
         }
 
-        prevX = x;
-        prevY = y;
+        _prevX = x;
+        _prevY = y;
 
         return true;
     }
