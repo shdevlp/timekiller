@@ -1,6 +1,7 @@
 package ru.timekiller;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -14,6 +15,11 @@ public class Enemy {
     protected ShaderHelper _shader;
     protected MatrixHelper _matrix = new MatrixHelper();
     protected FloatBuffer _vertexBuffer;
+
+    protected float _x;
+    protected float _y;
+    private float _speed;
+    private float _angle;
 
     public Enemy() {
         _shader = new ShaderHelper();
@@ -31,9 +37,42 @@ public class Enemy {
      * Случайная позиция "врага"
      */
     public void setRandPosition() {
-        final float x = GlobalVars.randFloat((int)GlobalVars.left + 2, (int)GlobalVars.right - 2);
-        final float y = GlobalVars.randFloat((int)GlobalVars.bottom + 2, (int)GlobalVars.top - 2);
-        _matrix.translate(x, y, 0);
+        _x = GlobalVars.randFloat((int)GlobalVars.left + 2, (int)GlobalVars.right - 2);
+        _y = GlobalVars.randFloat((int)GlobalVars.bottom + 2, (int)GlobalVars.top - 2);
+        _matrix.translate(_x, _y, 0); //Случайное метоположение
+
+        _angle = GlobalVars.randFloat(0, 360);        //Случайный угол
+        _speed = GlobalVars.randFloat(0, 100)/100.0f; //Случайная скорость
+    }
+
+    /**
+     * Следующий ход - передвигаемся по заданному
+     * направлению с заданной скоростью
+     */
+    public void generateNextStep() {
+        final double dx = Math.cos(GlobalVars.gradInRag(_angle));
+        final double dy = Math.sin(GlobalVars.gradInRag(_angle));
+
+        float offset = _speed * 0.1f;
+
+        float newX = _x + (float)(offset * dx);
+        float newY = _y + (float)(offset * dy);
+
+        float diffX = newX - _x;
+        float diffY = newY - _y;
+
+        _x += diffX;
+        _y += diffY;
+
+        if ( (_x < 0 && _x < GlobalVars.left)   ||
+             (_x > 0 && _x > GlobalVars.right)  ||
+             (_y > 0 && _y > GlobalVars.top)    ||
+             (_y < 0 && _y < GlobalVars.bottom) ) {
+            _angle -= 90.0f;
+            return;
+        }
+
+        _matrix.translate(diffX, diffY, 0); //Случайное метоположение
     }
 
     /**
@@ -45,9 +84,32 @@ public class Enemy {
         _matrix.translate(x, y, 0.0f);
     }
 
+    /**
+     * Сохраняем координатную систему
+     */
+    public void pushMatrix() {
+        _matrix.pushMatrix();;
+    }
+
+    /**
+     * Восстанавливаем координатную систему
+     */
+    public void popMatrix() {
+        _matrix.popMatrix();
+    }
+
+    /**
+     * Масштабирование по осям
+     * @param x
+     * @param y
+     */
     public void scale2D(float x, float y) {
         _matrix.scale(x, y, 0.0f);
     }
+
+    /**
+     * Рисуем кадр
+     */
     public void draw() {
         _shader.bind();
 

@@ -40,7 +40,10 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
         GLES20.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
         for (int i = 0; i < GlobalVars.enemySize; i++) {
+            //_enemy[i].pushMatrix();
+            _enemy[i].generateNextStep();
             _enemy[i].draw();
+            //_enemy[i].popMatrix();
         }
 
         _warrior.draw();

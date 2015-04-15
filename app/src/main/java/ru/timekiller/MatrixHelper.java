@@ -12,6 +12,8 @@ public class MatrixHelper {
     private float[] _projectionMatrix = new float[16]; //Проекция
     private float[] _mvp              = new float[16]; //Все вместе
 
+    private float[] _saveMatrixs = new float[16*4]; //Сохраненная матрица
+
     /**
      * Установка проекционной, видовой, модельной матриц
      */
@@ -49,6 +51,26 @@ public class MatrixHelper {
      */
     public void scale(float x, float y, float z) {
         Matrix.scaleM(_viewMatrix, 0, x, y, z);
+    }
+
+    /**
+     * Сохранить матрицы
+     */
+    public void pushMatrix() {
+        System.arraycopy(_modelMatrix,      0, _saveMatrixs,  0, 16);
+        System.arraycopy(_viewMatrix,       0, _saveMatrixs, 16, 16);
+        System.arraycopy(_projectionMatrix, 0, _saveMatrixs, 32, 16);
+        System.arraycopy(_mvp,              0, _saveMatrixs, 48, 16);
+    }
+
+    /**
+     * Восстановить матрицы
+     */
+    public void popMatrix() {
+        System.arraycopy(_saveMatrixs, 0,  _modelMatrix,      0, 16);
+        System.arraycopy(_saveMatrixs, 16, _viewMatrix,       0, 16);
+        System.arraycopy(_saveMatrixs, 32, _projectionMatrix, 0, 16);
+        System.arraycopy(_saveMatrixs, 48, _mvp,              0, 16);
     }
 
     public void loadIdentity() {
