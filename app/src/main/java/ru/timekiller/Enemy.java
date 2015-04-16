@@ -37,8 +37,11 @@ public class Enemy {
      * Случайная позиция "врага"
      */
     public void setRandPosition() {
+        _matrix.loadIdentity();
+
         _x = GlobalVars.randFloat((int)GlobalVars.left + 2, (int)GlobalVars.right - 2);
         _y = GlobalVars.randFloat((int)GlobalVars.bottom + 2, (int)GlobalVars.top - 2);
+
         _matrix.translate(_x, _y, 0); //Случайное метоположение
 
         _angle = GlobalVars.randFloat(0, 360);        //Случайный угол
@@ -71,7 +74,6 @@ public class Enemy {
             _angle -= 90.0f;
             return;
         }
-
         _matrix.translate(diffX, diffY, 0); //Случайное метоположение
     }
 

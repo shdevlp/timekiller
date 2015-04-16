@@ -29,7 +29,7 @@ public class SecondsHelper {
         Calendar cl = Calendar.getInstance();
         cl.setTimeInMillis(secs);
 
-        return  cl.get(Calendar.HOUR_OF_DAY) + ":" + cl.get(Calendar.MINUTE) + ":" +
-                cl.get(Calendar.SECOND) + ":" + cl.get(Calendar.MILLISECOND);
+        return  cl.get(Calendar.MINUTE) + ":" + cl.get(Calendar.SECOND)
+                + ":" + cl.get(Calendar.MILLISECOND);
     }
 }

@@ -11,10 +11,6 @@ import android.util.Log;
 public class Warrior extends Enemy {
 
     public void generateNextStep() {
-        final float k = (float)GlobalVars.width / (GlobalVars.right * 2.0f);
-        final float l = GlobalVars.warriorX / k;
-
-      //  _matrix.translate(_x-l, 0, 0);
     }
 
     /**

@@ -7,12 +7,13 @@ import java.util.Random;
  */
 public class GlobalVars {
     //Размеры экрана
-    public final static float left = -11.25f;
-    public final static float right = 11.25f;
+    public final static float top    =  20.0f;
+    public final static float left   = -11.25f;
+    public final static float right  =  11.25f;
     public final static float bottom = -20.0f;
-    public final static float top = 20.0f;
+
     public final static float near = 0.1f;
-    public final static float far = 100.0f;
+    public final static float far  = 100.0f;
 
     //Направление взгляда
     public final static float eyeX = 0.0f;
@@ -31,7 +32,7 @@ public class GlobalVars {
 
     public final static int vertexCount = 4; //Сколько вершин у примитива
 
-    public static int width = 0;
+    public static int width  = 0;
     public static int height = 0;
 
     public static float warriorX = 0;
@@ -39,10 +40,10 @@ public class GlobalVars {
 
     //Координаты моделей
     public final static float[] texRect = {
-            -1.0f, -1.0f, 0.0f,
-            -1.0f,  1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            1.0f,  1.0f, 0.0f
+        -1.0f, -1.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+         1.0f,  1.0f, 0.0f
     };
 
     //U, V координаты текстуры
@@ -73,7 +74,7 @@ public class GlobalVars {
           + "attribute vec4 vPosition;"
           + ""
           + "void main() "
-          +"{"
+          + "{"
           + "   gl_Position = mvpMatrix * vPosition;"
           + "}";
 
@@ -83,7 +84,7 @@ public class GlobalVars {
           + "uniform vec4 vColor;"
           + ""
           + "void main() "
-          +"{"
+          + "{"
           + "   gl_FragColor = vColor;"
           + "}";
 

@@ -2,9 +2,8 @@ package ru.timekiller;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.Window;
-import android.view.WindowManager;
 
 /**
  * Created by Дмитрий on 13.04.2015.
@@ -12,8 +11,7 @@ import android.view.WindowManager;
 
 class TimeKillerView extends GLSurfaceView {
     private final TimeKillerRender _render;
-    private float _prevX;
-    private float _prevY;
+    private GestureDetector _gestureDetector;
 
     /**
      *
@@ -23,29 +21,30 @@ class TimeKillerView extends GLSurfaceView {
         super(context);
         setEGLContextClientVersion(2);
 
+        _gestureDetector = new GestureDetector(context, new GestureListener());
+
         _render = new TimeKillerRender(this);
         setRenderer(_render);
     }
 
-    /**
-     *
-     * @param e
-     * @return
-     */
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        float x = e.getX();
-        float y = e.getY();
+        return _gestureDetector.onTouchEvent(e);
+    }
 
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                GlobalVars.warriorX = x;
-                GlobalVars.warriorY = y;
+    public class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            float x = e.getX();
+            float y = e.getY();
+
+            return true;
         }
 
-        _prevX = x;
-        _prevY = y;
-
-        return true;
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            _render.reInit();
+            return true;
+        }
     }
 }
