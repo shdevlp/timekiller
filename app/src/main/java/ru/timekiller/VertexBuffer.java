@@ -12,17 +12,24 @@ public class VertexBuffer {
     private int[] vboId = new int[2];
     private int target;
 
-    public VertexBuffer() {
-    }
-
+    /**
+     *
+     */
     public void create() {
         GLES20.glGenBuffers(1, vboId, 0);
     }
 
+    /**
+     *
+     */
     public void free() {
         GLES20.glDeleteBuffers(1, vboId, 0);
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isOk() {
         return GLES20.glIsBuffer(vboId[0]);
     }

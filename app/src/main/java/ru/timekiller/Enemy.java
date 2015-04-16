@@ -23,13 +23,13 @@ public class Enemy {
 
     public Enemy() {
         _shader = new ShaderHelper();
-        _shader.compile(GlobalVars.vertexShader, GlobalVars.fragmentShader);
+        _shader.compile(GlobalVars.vsColorRect, GlobalVars.fsColorRect);
 
         ByteBuffer bb = ByteBuffer.allocateDirect(GlobalVars.coordsRectSize);
         bb.order(ByteOrder.nativeOrder());
 
         _vertexBuffer = bb.asFloatBuffer();
-        _vertexBuffer.put(GlobalVars.coordsRect);
+        _vertexBuffer.put(GlobalVars.texRect);
         _vertexBuffer.position(0);
     }
 
@@ -114,15 +114,16 @@ public class Enemy {
         _shader.bind();
 
         final int program = _shader.getId();
-        final int positionHandle = GLES20.glGetAttribLocation(program, "vPosition");
-        final int colorHandle = GLES20.glGetUniformLocation(program, "vColor");
-        final int mvpHandle = GLES20.glGetUniformLocation(program, "mvpMatrix");
 
+        final int positionHandle = GLES20.glGetAttribLocation(program, "vPosition");
         GLES20.glEnableVertexAttribArray(positionHandle);
         GLES20.glVertexAttribPointer(positionHandle, GlobalVars.coordsPerVertex,
                 GLES20.GL_FLOAT, false, 0, _vertexBuffer);
 
+        final int colorHandle = GLES20.glGetUniformLocation(program, "vColor");
         GLES20.glUniform4fv(colorHandle, 1, GlobalVars.colorEmeny, 0);
+
+        final int mvpHandle = GLES20.glGetUniformLocation(program, "mvpMatrix");
         GLES20.glUniformMatrix4fv(mvpHandle, 1, false, _matrix.getMvp(), 0);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, GlobalVars.vertexCount);

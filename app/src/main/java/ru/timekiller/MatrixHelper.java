@@ -54,6 +54,17 @@ public class MatrixHelper {
     }
 
     /**
+     *
+     * @param angle
+     * @param x
+     * @param y
+     * @param z
+     */
+    public void rotate(float angle, float x, float y, float z) {
+        Matrix.rotateM(_viewMatrix, 0, angle, x, y, z);
+    }
+
+    /**
      * Сохранить матрицы
      */
     public void pushMatrix() {

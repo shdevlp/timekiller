@@ -13,12 +13,23 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
     private Enemy[] _enemy;
     private Warrior _warrior;
     private GLSurfaceView _glView;
+    private TextHelper _text;
+    private SecondsHelper _secs;
 
+    /**
+     *
+     * @param view
+     */
     public TimeKillerRender(GLSurfaceView view) {
         super();
         _glView = view;
     }
 
+    /**
+     *
+     * @param unused
+     * @param config
+     */
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -34,8 +45,15 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
         _warrior = new Warrior();
         _warrior.setRandPosition();
         _warrior.scale2D(1.5f, 1.5f);
+
+        _text = new TextHelper();
+        _secs = new SecondsHelper();
     }
 
+    /**
+     *
+     * @param unused
+     */
     public void onDrawFrame(GL10 unused) {
         GLES20.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
@@ -46,9 +64,18 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
             //_enemy[i].popMatrix();
         }
 
+        _warrior.generateNextStep();
         _warrior.draw();
+
+        _text.draw(_secs.getSeconds());
     }
 
+    /**
+     *
+     * @param unused
+     * @param width
+     * @param height
+     */
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
     }

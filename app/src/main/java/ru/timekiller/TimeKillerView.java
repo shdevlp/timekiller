@@ -15,7 +15,10 @@ class TimeKillerView extends GLSurfaceView {
     private float _prevX;
     private float _prevY;
 
-
+    /**
+     *
+     * @param context
+     */
     public TimeKillerView(Context context){
         super(context);
         setEGLContextClientVersion(2);
@@ -24,6 +27,11 @@ class TimeKillerView extends GLSurfaceView {
         setRenderer(_render);
     }
 
+    /**
+     *
+     * @param e
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         float x = e.getX();
@@ -31,17 +39,8 @@ class TimeKillerView extends GLSurfaceView {
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-
-                float dx = x - _prevX;
-                float dy = y - _prevY;
-
-                if (y > getHeight() / 2) {
-                    dx = dx * -1 ;
-                }
-
-                if (x < getWidth() / 2) {
-                    dy = dy * -1 ;
-                }
+                GlobalVars.warriorX = x;
+                GlobalVars.warriorY = y;
         }
 
         _prevX = x;
