@@ -29,15 +29,20 @@ class TimeKillerView extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
+        switch (e.getAction()) {
+            case MotionEvent.ACTION_MOVE: {
+                GlobalVars.warriorX = e.getX();
+                GlobalVars.warriorY = e.getY();
+                return true;
+            }
+        }
+
         return _gestureDetector.onTouchEvent(e);
     }
 
     public class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {
-            float x = e.getX();
-            float y = e.getY();
-
             return true;
         }
 

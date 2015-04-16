@@ -11,6 +11,25 @@ import android.util.Log;
 public class Warrior extends Enemy {
 
     public void generateNextStep() {
+        if (GlobalVars.warriorX != 0 || GlobalVars.warriorY != 0) {
+            //Рассчет % отношений
+            final float percentValueX = (GlobalVars.warriorX * 100.0f) / (float)GlobalVars.width;
+            final float percentValueY = (GlobalVars.warriorY * 100.0f) / (float)GlobalVars.height;
+
+            GlobalVars.warriorX = 0;
+            GlobalVars.warriorY = 0;
+
+            final float newX = (((GlobalVars.right * 2.0f) * percentValueX) / 100.0f) - GlobalVars.right;
+            final float newY = GlobalVars.top - ((GlobalVars.top * 2.0f) * percentValueY) / 100.0f;
+
+            final float deffX = newX - _x;
+            final float deffY = newY - _y;
+
+            _x = (float)newX;
+            _y = (float)newY;
+
+            _matrix.translate(deffX, deffY, 0.0f);
+        }
     }
 
     /**

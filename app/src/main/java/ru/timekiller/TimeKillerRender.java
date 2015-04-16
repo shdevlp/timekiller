@@ -31,6 +31,8 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
         }
 
         _warrior.setRandPosition();
+        _warrior.scale2D(1.5f, 1.5f);
+
         _secs.reset();
     }
 
