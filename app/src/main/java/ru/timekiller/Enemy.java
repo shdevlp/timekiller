@@ -18,7 +18,6 @@ public class Enemy {
 
     protected float _x;
     protected float _y;
-    private float _speed;
     private float _angle;
 
     public Enemy() {
@@ -33,6 +32,21 @@ public class Enemy {
         _vertexBuffer.position(0);
     }
 
+    public float currentX() {
+        return _x;
+    }
+
+    public float currentY() {
+        return _y;
+    }
+
+    public float currentAngle() {
+        return _angle;
+    }
+
+    public void setAngle(float an) {
+        _angle = an;
+    }
     /**
      * Случайная позиция "врага"
      */
@@ -45,7 +59,6 @@ public class Enemy {
         _matrix.translate(_x, _y, 0); //Случайное метоположение
 
         _angle = GlobalVars.randFloat(0, 360);        //Случайный угол
-        _speed = GlobalVars.randFloat(0, 100)/100.0f; //Случайная скорость
     }
 
     /**
@@ -56,7 +69,7 @@ public class Enemy {
         final double dx = Math.cos(GlobalVars.gradInRag(_angle));
         final double dy = Math.sin(GlobalVars.gradInRag(_angle));
 
-        float offset = _speed * 0.1f;
+        float offset = GlobalVars.speed * 0.1f;
 
         float newX = _x + (float)(offset * dx);
         float newY = _y + (float)(offset * dy);

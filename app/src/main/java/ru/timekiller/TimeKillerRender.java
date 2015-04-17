@@ -15,6 +15,7 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
     private GLSurfaceView _glView;
     private TextHelper _text;
     private SecondsHelper _secs;
+    private CollisionDetecter _collision;
 
     /**
      *
@@ -23,6 +24,7 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
     public TimeKillerRender(GLSurfaceView view) {
         super();
         _glView = view;
+        GlobalVars.setUpSpeed();
     }
 
     public void reInit() {
@@ -34,6 +36,11 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
         _warrior.scale2D(1.5f, 1.5f);
 
         _secs.reset();
+        GlobalVars.setUpSpeed();
+        GlobalVars.isStop = false;
+
+        _collision = new CollisionDetecter();
+        _collision.execute();
     }
 
     /**
@@ -59,15 +66,33 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
 
         _text = new TextHelper();
         _secs = new SecondsHelper();
+
+        _collision = new CollisionDetecter();
+        _collision.execute();
     }
 
     /**
-     *
-     * @param unused
+     * Отрисовка при окончании игры
      */
-    public void onDrawFrame(GL10 unused) {
-        GLES20.glClear(GL10.GL_COLOR_BUFFER_BIT);
+    private void gameStop() {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < GlobalVars.enemySize; i++) {
+                    _enemy[i].draw();
+                }
 
+                _warrior.draw();
+                _text.draw(_secs.lastSecond());
+            }
+        };
+        r.run();
+    }
+
+    /**
+     * Игра
+     */
+    private void game() {
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -76,14 +101,28 @@ public class TimeKillerRender implements GLSurfaceView.Renderer {
                     _enemy[i].draw();
                 }
 
-                _warrior.generateNextStep();
+                _warrior.generateNextStep(_enemy, _secs);
                 _warrior.draw();
 
                 _text.draw(_secs.getSeconds());
             }
         };
-
         r.run();
+    }
+
+    /**
+     * Отрисовка кадра
+     * @param unused
+     */
+    public void onDrawFrame(GL10 unused) {
+        GLES20.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
+        if (GlobalVars.isStop) {
+            gameStop();
+            return;
+        } else {
+            game();
+        }
     }
 
     /**

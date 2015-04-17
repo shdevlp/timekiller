@@ -7,7 +7,7 @@ import java.util.Calendar;
  */
 public class SecondsHelper {
     private long _counter;
-
+    private String _lastSecond;
     public SecondsHelper() {
         reset();
     }
@@ -20,6 +20,14 @@ public class SecondsHelper {
     }
 
     /**
+     *
+     * @return
+     */
+    public String lastSecond() {
+        return _lastSecond;
+    }
+
+    /**
      * Получить строку секундомера
      * @return
      */
@@ -29,7 +37,9 @@ public class SecondsHelper {
         Calendar cl = Calendar.getInstance();
         cl.setTimeInMillis(secs);
 
-        return  cl.get(Calendar.MINUTE) + ":" + cl.get(Calendar.SECOND)
+        _lastSecond = cl.get(Calendar.MINUTE) + ":" + cl.get(Calendar.SECOND)
                 + ":" + cl.get(Calendar.MILLISECOND);
+
+        return  _lastSecond;
     }
 }

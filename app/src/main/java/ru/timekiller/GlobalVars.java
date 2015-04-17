@@ -34,9 +34,11 @@ public class GlobalVars {
 
     public static int width  = 0;
     public static int height = 0;
-
+    public static float speed = 0.0f; //Случайная скорость;
     public static float warriorX = 0;
     public static float warriorY = 0;
+
+    public static boolean isStop = false;
 
     //Координаты моделей
     public final static float[] texRect = {
@@ -147,5 +149,32 @@ public class GlobalVars {
      */
     public static double gradInRag(double a) {
         return (a * Math.PI) / 180.0f;
+    }
+
+
+    /**
+     * Вычисляет пересечение война и врага
+     * @param warriorX
+     * @param warriorY
+     * @param enemyX
+     * @param enemyY
+     * @return
+     */
+    public static boolean intersectRect(float warriorX, float warriorY, float enemyX, float enemyY) {
+        float r1 = 1.0f;
+        float r2 = 0.5f;
+        float dx = warriorX - enemyX;
+        float dy = warriorY - enemyY;
+
+        double d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+        if (d <= (r1 + r2)*(r1 + r2) && d >= (r1 > r2 ? r1 - r2 : r2 - r1))
+            return true;
+        else
+            return false;
+    }
+
+    public static void setUpSpeed() {
+        speed = GlobalVars.randFloat(50, 100)/100.0f;
     }
 }
